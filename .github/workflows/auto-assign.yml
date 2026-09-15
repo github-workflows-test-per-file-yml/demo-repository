@@ -1,19 +1,24 @@
 name: Auto Assign
+
 on:
   issues:
     types: [opened]
   pull_request:
     types: [opened]
+
+permissions: {}
+
 jobs:
-  run:
+  assign:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       issues: write
       pull-requests: write
     steps:
-    - name: 'Auto-assign issue'
-      uses: pozil/auto-assign-issue@v1
-      with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Auto-assign issue or pull request
+        uses: pozil/auto-assign-issue@d11e715efc663fe323c3d8d4d3cbbfdddd539baf # v1
+        with:
+          repo-token: ${{ github.token }}
           assignees: Mikhai56
           numOfAssignee: 1
