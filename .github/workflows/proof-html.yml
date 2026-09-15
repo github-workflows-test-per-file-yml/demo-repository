@@ -1,11 +1,34 @@
 name: Proof HTML
+
 on:
   push:
+    paths:
+      - '**/*.html'
+      - '.github/scripts/check_html.py'
+      - '.github/workflows/proof-html.yml'
+  pull_request:
+    paths:
+      - '**/*.html'
+      - '.github/scripts/check_html.py'
+      - '.github/workflows/proof-html.yml'
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proof-html-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: anishathalye/proof-html@v1.1.0
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          directory: ./
+          persist-credentials: false
+
+      - name: Validate HTML structure
+        run: python3 .github/scripts/check_html.py

@@ -1,19 +1,31 @@
 name: Auto Assign
+
 on:
   issues:
     types: [opened]
   pull_request:
     types: [opened]
+
+permissions: {}
+
 jobs:
-  run:
+  assign:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       issues: write
       pull-requests: write
     steps:
-    - name: 'Auto-assign issue'
-      uses: pozil/auto-assign-issue@v1
-      with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          assignees: Mikhai56
-          numOfAssignee: 1
+      - name: Assign issue or pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ASSIGNEE: Mikhai56
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${ISSUE_NUMBER:-}" ]]; then
+            gh issue edit "$ISSUE_NUMBER" --add-assignee "$ASSIGNEE" --repo "$GITHUB_REPOSITORY"
+          else
+            gh pr edit "$PR_NUMBER" --add-assignee "$ASSIGNEE" --repo "$GITHUB_REPOSITORY"
+          fi
