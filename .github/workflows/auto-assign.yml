@@ -16,9 +16,16 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - name: Auto-assign issue or pull request
-        uses: pozil/auto-assign-issue@d11e715efc663fe323c3d8d4d3cbbfdddd539baf # v1
-        with:
-          repo-token: ${{ github.token }}
-          assignees: Mikhai56
-          numOfAssignee: 1
+      - name: Assign issue or pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ASSIGNEE: Mikhai56
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${ISSUE_NUMBER:-}" ]]; then
+            gh issue edit "$ISSUE_NUMBER" --add-assignee "$ASSIGNEE" --repo "$GITHUB_REPOSITORY"
+          else
+            gh pr edit "$PR_NUMBER" --add-assignee "$ASSIGNEE" --repo "$GITHUB_REPOSITORY"
+          fi
