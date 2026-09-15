@@ -4,12 +4,12 @@ on:
   push:
     paths:
       - '**/*.html'
-      - '**/*.css'
+      - '.github/scripts/check_html.py'
       - '.github/workflows/proof-html.yml'
   pull_request:
     paths:
       - '**/*.html'
-      - '**/*.css'
+      - '.github/scripts/check_html.py'
       - '.github/workflows/proof-html.yml'
   workflow_dispatch:
 
@@ -30,7 +30,5 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Validate HTML
-        uses: anishathalye/proof-html@47a787591515a207d6fc8ef13e016ac42cb877c8 # v1.1.0
-        with:
-          directory: ./
+      - name: Validate HTML structure
+        run: python3 .github/scripts/check_html.py
